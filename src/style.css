@@ -1,0 +1,80 @@
+@import "tailwindcss";
+@import "@fontsource/prata/cyrillic-400.css";
+@import "@fontsource/prata/latin-400.css";
+@import "@fontsource/manrope/cyrillic-500.css";
+@import "@fontsource/manrope/latin-500.css";
+:root {
+  color-scheme: dark;
+  scrollbar-gutter: stable;
+  --pad: clamp(22px,4.4vw,90px);
+  --vh: 100vh;
+  --serif: 'Prata', Georgia, serif;
+  font: 500 16px/1.45 Manrope, sans-serif;
+  background: #000;
+  color: #f2efe9;
+}
+@supports(height:100svh){:root{--vh:100svh}}
+*{box-sizing:border-box}
+body{margin:0}
+a{color:inherit;text-decoration:none}
+a:focus-visible{outline:2px solid #fff;outline-offset:5px}
+/* ScrollTrigger stores pixel widths until its next resize refresh. */
+#root > .pin-spacer,.scene{max-inline-size:100%}
+.scene{height:var(--vh);position:relative;isolation:isolate;background:#000;overflow:clip}
+.media,.black,.opening,.statement,.intro{position:absolute;inset:0}
+.media{overflow:hidden}
+.film{position:absolute;width:min(100%,calc(var(--vh)*2.02));aspect-ratio:16/9;left:50%;top:54%;transform:translate(-50%,-50%)}
+.film img,.film video{position:absolute;width:100%;height:100%;object-fit:contain}
+.film:after{content:'';position:absolute;inset:-1px;background:linear-gradient(#000,transparent 22%,transparent 78%,#000)}
+header,.foot{position:absolute;left:max(var(--pad),env(safe-area-inset-left));right:max(var(--pad),env(safe-area-inset-right));display:flex;align-items:center;justify-content:space-between}
+header{top:max(14px,env(safe-area-inset-top));height:clamp(58px,8vh,88px)}
+.wordmark{display:inline-flex;align-items:center;gap:.15em;font:500 clamp(17px,1.35vw,24px)/1 Manrope,sans-serif;letter-spacing:.13em;white-space:nowrap}
+.nav,.action,.scroll{font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.nav,.action{display:inline-flex;align-items:center;justify-content:space-between;gap:22px;min-height:44px}
+.nav svg{transform:rotate(-45deg)!important}
+.headline{position:absolute;top:19%;width:100%;padding-inline:var(--pad);text-align:center}
+h1,h2{font:400 clamp(36px,min(5.5vw,8.8vh),108px)/1.07 var(--serif);letter-spacing:-.038em;margin:0}
+.title-line{display:block;white-space:nowrap}
+.letter{display:inline-block;white-space:pre}
+.headline h1,.statement h2{transform:scaleX(.86)}
+.foot{bottom:max(4.6vh,env(safe-area-inset-bottom));padding-top:22px}
+.foot p,.statement p{font-size:clamp(13px,1.05vw,18px);color:#cbc8c4;line-height:1.55}
+.foot p{max-width:25ch;margin:0}
+.scroll{display:flex;align-items:center;gap:12px;color:#aaa9a6;position:absolute;left:50%;transform:translateX(-50%);font-size:9px}
+.action{background:#232321;border-radius:100px;padding:0 22px;height:48px;transition:color .2s,background .2s}
+.action:hover,.action:focus-visible{background:#eeeae3;color:#111}
+.black,.intro{background:#000}
+.black{opacity:0;pointer-events:none}
+.statement,.intro{display:grid;place-items:center;text-align:center}
+.statement{visibility:hidden;padding:var(--pad)}
+.statement p{margin:26px 0}
+.statement h2{font-size:clamp(42px,5.1vw,106px)}
+.intro .wordmark{opacity:0;font-size:clamp(23px,3vw,45px)}
+.static{height:auto}
+.static .media,.static .opening{height:var(--vh);bottom:auto}
+.static .statement{visibility:visible;position:relative;min-height:80svh;margin-top:var(--vh)}
+.static .black{display:none}
+@media(max-aspect-ratio:1/1){
+  .headline{top:23%}
+  h1{font-size:clamp(42px,11.5vw,85px);line-height:1.09}
+  .film{top:54%;width:100%}
+  .foot{display:grid;grid-template-columns:1fr auto;gap:23px 12px;align-items:center}
+  .foot p{max-width:24ch}
+  .scroll{position:static;transform:none;grid-row:2;grid-column:1/-1;justify-self:center;font-size:8px}
+  .action{font-size:9px;gap:10px;padding-inline:15px}
+  .statement h2{font-size:clamp(30px,8.8vw,70px)}
+}
+@media(max-width:700px) and (orientation:portrait){
+  .film{width:148%;top:53%}
+}
+@media(max-height:520px) and (orientation:landscape){
+  header{height:44px;top:0}
+  .headline{top:16%}
+  h1{font-size:7.5vh}
+  .foot{bottom:8px;padding-top:6px}
+  .foot p{font-size:12px}
+  .action{height:44px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.static{display:flow-root}
+.static .intro{height:var(--vh);bottom:auto}
