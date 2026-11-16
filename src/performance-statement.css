@@ -2,6 +2,7 @@
 .performance-stage{
   position:relative;isolation:isolate;overflow:hidden;
   height:var(--vh);max-inline-size:100%;background:#000;
+  contain:strict;
   --lead-width:min(61%,110svh);
   --side-width:min(53%,95svh);
 }
@@ -17,7 +18,12 @@
 .performance h2 span{display:block}
 .performance-copy p{max-width:32ch;text-wrap:balance;margin:18px auto 0;color:#aaa5a3;font-size:clamp(12px,.92vw,17px)}
 .performance-floor{position:absolute;inset:0;background:linear-gradient(#020202,#0d0a0c)}
-.performance-car{position:absolute;z-index:2;top:0;display:block;width:var(--side-width);pointer-events:none}
+.performance-car{
+  position:absolute;z-index:2;top:0;display:block;
+  width:var(--side-width);pointer-events:none;
+  /* GPU layer hint — will-change is toggled on/off via JS with onToggle */
+  backface-visibility:hidden;
+}
 .performance-car img{display:block;width:100%;height:auto}
 .car-black{left:calc(var(--side-width) * -.51)}
 .car-graphite{right:calc(var(--side-width) * -.48)}
