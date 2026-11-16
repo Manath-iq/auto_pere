@@ -10,6 +10,10 @@ import PerformanceStatement from './PerformanceStatement'
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 ScrollTrigger.config({ ignoreMobileResize: true })
 const motion = matchMedia('(prefers-reduced-motion: reduce)')
+// Detect low-power / mobile devices to skip expensive GPU filters
+const isMobile = /iPhone|iPad|iPod|Android/i.test(
+  typeof navigator !== 'undefined' ? navigator.userAgent : ''
+)
 const subscribe = (fn: () => void) => {
   motion.addEventListener('change', fn)
   return () => motion.removeEventListener('change', fn)
@@ -26,12 +30,17 @@ function Action({ final = false }: { final?: boolean }) {
 function IntroPreloader() {
   return <div className="intro" aria-hidden="true"><Wordmark/></div>
 }
+// Pick source once at mount — <source media="..."> is unreliable on iOS Safari
+const isMobileViewport = () =>
+  typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
+
 function HeroVideo({ video, enabled, fail }: { video: RefObject<HTMLVideoElement | null>, enabled: boolean, fail: () => void }) {
+  const src = useRef(isMobileViewport() ? hero.media + 'mobile.mp4' : hero.media + 'desktop.mp4')
   return <div className="media" aria-hidden="true"><div className="film">
     <img className="poster" src={hero.media + 'first.webp'} alt="" />
-    {enabled && <video ref={video} muted playsInline preload="auto" poster={hero.media + 'first.webp'} onError={event => { if (event.target === event.currentTarget) fail() }}>
-      <source media="(max-width: 767px)" src={hero.media + 'mobile.mp4'} type="video/mp4"/>
-      <source src={hero.media + 'desktop.mp4'} type="video/mp4" onError={fail}/>
+    {enabled && <video ref={video} muted playsInline preload="auto" poster={hero.media + 'first.webp'}
+      onError={event => { if (event.target === event.currentTarget) fail() }}>
+      <source src={src.current} type="video/mp4" onError={fail}/>
     </video>}
   </div></div>
 }
@@ -109,9 +118,11 @@ export default function HeroExperience() {
     const opening = root.current!.querySelector<HTMLElement>('.opening')!
     const statement = root.current!.querySelector<HTMLElement>('.statement')!
     const camera = {progress:0}
+    // On mobile use a higher scrub value to reduce paint frequency
+    const scrub = isMobile ? 0.45 : 0.16
     const tl = gsap.timeline({defaults:{ease:'none'},scrollTrigger:{
       trigger:root.current, start:'top top', end:() => '+=' + Math.round(root.current!.offsetHeight * 3.25),
-      refreshPriority:1, pin:true, scrub:.16, invalidateOnRefresh:true, anticipatePin:1,
+      refreshPriority:1, pin:true, scrub, invalidateOnRefresh:true, anticipatePin:1,
     },onUpdate:() => {
       opening.inert = tl.progress() >= .24
       statement.inert = tl.progress() < .91
@@ -119,19 +130,22 @@ export default function HeroExperience() {
     statement.inert = true
     // Let the right edge lift first. The second line trails like a second breath.
     const openingRows = opening.querySelectorAll('.title-line')
+    // Skip blur on mobile GPU — transform + opacity alone look great and are composited
+    const exitBlur = isMobile ? 'blur(0px)' : 'blur(7px)'
     openingRows.forEach((row, index) => {
       tl.fromTo(row.children, {opacity: 1, yPercent: 0, xPercent: 0, rotation: 0, filter: 'blur(0px)'}, {
-        opacity: 0, yPercent: -54, xPercent: 26, rotation: 4, filter: 'blur(7px)',
+        opacity: 0, yPercent: -54, xPercent: 26, rotation: 4, filter: exitBlur,
         duration: .071, stagger: {amount: .056, from: 'end'}, ease: 'power2.in',
       }, .082 + index * .021)
     })
+    const entranceBlur = isMobile ? 'blur(0px)' : 'blur(6px)'
     tl.to('.opening header, .opening .foot',{autoAlpha:0,y:-5,duration:.08},.12)
       .set(opening,{autoAlpha:0},.24)
       .to(camera,{progress:1,duration:.58,onUpdate:()=>seek(camera.progress)},.20)
       .to('.black',{opacity:1,duration:.15},.755)
       .fromTo(statement,{autoAlpha:0},{autoAlpha:1,duration:.055},.865)
       .from('.statement .letter',{
-        opacity:0, yPercent:28, filter:'blur(6px)', stagger:{amount:.054},
+        opacity:0, yPercent:28, filter:entranceBlur, stagger:{amount:.054},
         duration:.05, ease:'power2.out',
       },.86)
       .from('.statement p, .final-action',{opacity:0,y:7,stagger:.015,duration:.044,ease:'power2.out'},.923)

@@ -24,7 +24,7 @@ a:focus-visible{outline:2px solid #fff;outline-offset:5px}
 .media,.black,.opening,.statement,.intro{position:absolute;inset:0}
 .media{overflow:hidden}
 .film{position:absolute;width:min(100%,calc(var(--vh)*2.02));aspect-ratio:16/9;left:50%;top:54%;transform:translate(-50%,-50%)}
-.film img,.film video{position:absolute;width:100%;height:100%;object-fit:contain}
+.film img,.film video{position:absolute;width:100%;height:100%;object-fit:contain;will-change:transform}
 .film:after{content:'';position:absolute;inset:-1px;background:linear-gradient(#000,transparent 22%,transparent 78%,#000)}
 header,.foot{position:absolute;left:max(var(--pad),env(safe-area-inset-left));right:max(var(--pad),env(safe-area-inset-right));display:flex;align-items:center;justify-content:space-between}
 header{top:max(14px,env(safe-area-inset-top));height:clamp(58px,8vh,88px)}
@@ -35,7 +35,7 @@ header{top:max(14px,env(safe-area-inset-top));height:clamp(58px,8vh,88px)}
 .headline{position:absolute;top:19%;width:100%;padding-inline:var(--pad);text-align:center}
 h1,h2{font:400 clamp(36px,min(5.5vw,8.8vh),108px)/1.07 var(--serif);letter-spacing:-.038em;margin:0}
 .title-line{display:block;white-space:nowrap}
-.letter{display:inline-block;white-space:pre}
+.letter{display:inline-block;white-space:pre;will-change:transform,opacity}
 .headline h1,.statement h2{transform:scaleX(.86)}
 .foot{bottom:max(4.6vh,env(safe-area-inset-bottom));padding-top:22px}
 .foot p,.statement p{font-size:clamp(13px,1.05vw,18px);color:#cbc8c4;line-height:1.55}
